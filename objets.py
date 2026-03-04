@@ -1,15 +1,29 @@
 from personnage import *
 from random import *
 from donjon import *
-from Projet_2A import *
 ### NE PAS OUBLIER DE SUPPRIMER LES POTIONS DE L'INVENTAIRE###
 
 class ClassObjets:
+    all_Id = []
+    all_shop_rates = []
+    all_shop_prices = []
+    all_chest_rates = []
+    all_nom = []
+
+    def __init__(self,Id,shop_rate,shop_price,chest_rate,nom):
+        self.Id = Id
+        self.shop_rate = shop_rate
+        self.shop_price = shop_price
+        self.chest_rate = chest_rate
+        self.nom = nom
+
+        ClassObjets.all_Id.append(Id)
+        ClassObjets.all_shop_rates.append(shop_rate)
+        ClassObjets.all_shop_prices.append(shop_price)
+        ClassObjets.all_chest_rates.append(chest_rate)
+        ClassObjets.all_nom.append(nom)
 
     def pot_HP(self,personnage):
-        self.shop_rate = 0.2
-        self.shop_price = 10
-        self.chest_rate = 0.4
 
         heal_value = personnage.viemax//5
         if personnage.vie == personnage.viemax :
@@ -27,9 +41,6 @@ class ClassObjets:
             Vos HP sont à:""", personnage.vie)
             
     def pot_guarenteed_up_stat(self, personnage):
-        self.shop_rate = 0.2
-        self.shop_price = 10
-        self.chest_rate = 0.05
 
         rand1 = randint(0,4) ### Permet de choisir aléatoirement l'augmentation d'une stat entre +1(80%) et +2(20%)
         augm = 1
@@ -45,9 +56,6 @@ class ClassObjets:
             personnage.agilite += augm
 
     def pot_random_stat1(self, personnage):
-        self.shop_rate = 0.2
-        self.shop_price = 10
-        self.chest_rate = 0.4
 
         rand1 = randint(0,1) ### Permet de choisir aléatoirement l'augmentation/diminution d'une stat entre +1(50%) et -1(50%)
         augm = 0
@@ -65,10 +73,6 @@ class ClassObjets:
             personnage.agilite += augm
         
     def pot_random_stat2(self, personnage):
-        self.shop_rate = 0.2
-        self.shop_price = 10
-        self.chest_rate = 0.4
-
 
         rand1 = randint(0,4) ### Permet de choisir aléatoirement l'augmentation/diminution d'une stat entre +2(25%) et -2(75%)
         augm = 0
@@ -86,16 +90,22 @@ class ClassObjets:
             personnage.agilite += augm
     
     def skip_level(self, donjon):
-        self.shop_rate = 0.2
-        self.shop_price = 10
-        self.chest_rate = 0.4
 
         donjon.level += 1
 
-
+"""
     def pot_guarenteed_chest(self, ):
 
     def pot_guarenteed_mob(self, ):
     
     def pot_gold_rate_up(self, ):
+"""
 
+potion_HP = ClassObjets(0,17,15,4,"Potion de soin")
+potion_guarenteed_up_stat = ClassObjets(1,3,40,4,"Potion dorée")
+potion_random_stat1 = ClassObjets(2,6,10,4,"Potion douteuse")
+potion_random_stat2 = ClassObjets(3,6,20,4,"Potion très douteuse")
+potion_skip_level = ClassObjets(4,3,35,4,"Potion d'accélération temporel")
+potion_guarenteed_chest = ClassObjets(5,3,30,4,"Potion du coffre")
+potion_guarenteed_mob = ClassObjets(6,7,20,4,"Potion hostile")
+potion_gold_rate_up = ClassObjets(7,5,25,4,"Potion de fortune")
