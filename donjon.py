@@ -1,9 +1,11 @@
 from random import *
 import os
+from objets import *
 
 class ClassDonjon:
     def __init__(self):
         self.level = 1
+        self.current_room = {"devant": "", "gauche": "", "droite": ""}
         self.devant = [
     "une porte suspecte",
     "un vieil escalier de style victorien",
@@ -100,49 +102,32 @@ class ClassDonjon:
     "Polytech Nancy",
 ]
 
-    def salleAleatoire(self, donjon):
-        devant = None
-        droite = None
-        gauche = None
-        enDeplacement = True
-        murs = sample(range(0, 3), randint(1,2))
-        """ EN FACE """
-        if 0 in murs:
-            devant = f"un mur"
+    def generer_nouvelle_salle(self):
+        """Generates the layout of the next room without blocking the game."""
+        murs = sample(range(0, 3), randint(1, 2))
+        
+        self.current_room["devant"] = "un mur" if 0 in murs else choice(self.devant)
+        self.current_room["gauche"] = "un mur" if 1 in murs else choice(self.devant)
+        self.current_room["droite"] = "un mur" if 2 in murs else choice(self.devant)
+        
+    def showRoom(self):
+        print(self.current_room)
+        
+    def tenter_deplacement(self, direction, NextLevel=False, personnage=None):
+        """
+        Logic to check if movement is possible.
+        Returns True if moved successfully, False if hit a wall.
+        """
+        if direction == 'o':
+            for item in personnage.objets:
+                print(chest_object_name(item))
+            return True
         else:
-            devant = choice(self.devant)
-        """ GAUCHE """
-        if 1 in murs:
-            gauche=f"un mur"
-        else:
-            gauche=choice(self.devant)
-        """ DROITE """
-        if 2 in murs:
-            droite=f"un mur"
-        else:
-            droite=choice(self.devant)
-        while enDeplacement:
-            print(f"""
-═════EXPLORATION═════
-En face  : {devant}
-À droite : {droite}
-À gauche : {gauche}
-═════════════════════
-Déplacement : [z] Devant   [d] Droite   [q] Gauche
-                  """)
-            deplacement = input("Déplacement (z:devant, d:doite, g:gauche) >")
-            if deplacement == "z" and "mur" in devant:
-                os.system('cls' if os.name == 'nt' else 'clear')
-                print("Il y a un mur, impossible de le franchir")
-            elif deplacement == "q" and "mur" in gauche:
-                os.system('cls' if os.name == 'nt' else 'clear')
-                print("Il y a un mur, impossible de le franchir")
-            elif deplacement == "d" and "mur" in droite:
-                os.system('cls' if os.name == 'nt' else 'clear')
-                print("Il y a un mur, impossible de le franchir")
-            elif deplacement == "q" or deplacement == "z" or deplacement == "d":
-                os.system('cls' if os.name == 'nt' else 'clear')
-                enDeplacement = False
-                donjon.level += 1
-            else:
-                print("Déplacement non valide")
+            mapping = {'z': 'devant', 'q': 'gauche', 'd': 'droite'}
+            cible = mapping.get(direction)
+
+            if cible and "mur" in self.current_room[cible]:
+                return False
+            if NextLevel:
+                self.level += 1
+            return True

@@ -3,8 +3,8 @@ RPG à base de commande vocale
 Objectifs : 
 - création du personnage avec les compétence (répartition de 10 points de compétence selon : agilité, attack, défense) [FAIT]
 -Système d'inventaire + Objets [En cours]
-- création d'ennemis [En cours]
-- création du donjon [En cours]
+- création d'ennemis [Fait]
+- création du donjon [Fait]
 - améliorer l'interactivité du jeu à la voix du joueur [À faire]
 
 
@@ -14,7 +14,7 @@ Fonctions nécessaires :
 - influence des résultats des jets par les stats [À faire]
 - les npc doivent avoir des voix [À faire]
 - système d'HP [En cours]
--système de potions inclus dans le shop [En cours]
+-système de potions inclus dans le shop [Fait]
 
 Gameplay :
 -10 stages -> Boss

@@ -5,7 +5,7 @@ from random import *
 def shop_item_selection():
     Random_Prob = [] ###Créer une liste de probabilité
     Id = ClassObjets.all_Id
-    L = ClassObjets.all_shop_rates
+    L = ClassObjets.all_shop_rates[:7]
     
     for i in range(len(L)):
         x=L[i]
@@ -19,7 +19,7 @@ def shop_item_selection():
     return item1, item2, item3
 
 def prix(x):
-    prix = ClassObjets.all_shop_prices
+    prix = ClassObjets.all_shop_prices[:7]
     answer = x
     prix1 = prix[int(answer[0])]
     prix2 = prix[int(answer[1])]
@@ -27,7 +27,7 @@ def prix(x):
     return prix1,prix2,prix3
 
 def names(x):
-    noms = ClassObjets.all_nom
+    noms = ClassObjets.all_nom[:7]
     answer = x
     nom1 = noms[int(answer[0])]
     nom2 = noms[int(answer[1])]
@@ -35,14 +35,10 @@ def names(x):
     return nom1,nom2,nom3
 
 
-
-"""
-class ClassShop:
-
-
-
-    def achat(self, personnage):
-
-
-    def fermer_shop(self,):
-"""
+def achat(select):
+    if ClassPersonnage.Or < prix(select):
+        return f"Vous n'avez pas assez d'or"
+    else:
+        ClassPersonnage.Or -= prix(select)
+        ClassPersonnage.objets.append(select)
+        return f"Vous avez acheté {names(select)} pour {prix(select)} Or"

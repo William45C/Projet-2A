@@ -1,7 +1,13 @@
+"""Trucs qu'on peut utiliser : 
+https://codeberg.org/nohkumado/matrix_mud
+https://codeberg.org/nohkumado/mud_editor
+"""
+
+""" INSTALLATION """
+
 """ IMPORTATION LIBRAIRIES """
+import os, keyboard
 import speech_recognition as sr
-import keyboard
-import os
 
 """ IMPORTATION FICHIERS """
 from personnage import *
