@@ -119,15 +119,14 @@ class ClassDonjon:
         Returns True if moved successfully, False if hit a wall.
         """
         if direction == 'o':
-            for item in personnage.objets:
-                print(chest_object_name(item))
-            return True
+            return None
         else:
             mapping = {'z': 'devant', 'q': 'gauche', 'd': 'droite'}
             cible = mapping.get(direction)
 
             if cible and "mur" in self.current_room[cible]:
                 return False
-            if NextLevel:
-                self.level += 1
-            return True
+            elif NextLevel == True:
+                return True
+
+

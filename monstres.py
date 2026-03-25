@@ -8,7 +8,7 @@ class ClassGoblin:
     def __init__(self, donjon):
         self.name = "goblin"
         self.vie = 5 * (donjon.level/5)
-        self.attack = 2 * (donjon.level/5)
+        self.attack = round(2 * (donjon.level/5))
         self.defense = 0 * (donjon.level/5)
         self.agilite = 5 * (donjon.level/5)
         self.deathgold = round(3 + (donjon.level/5),1)
@@ -17,7 +17,7 @@ class ClassMimic:
     def __init__(self, donjon):
         self.name = "little mfcker"
         self.vie = 10 + donjon.level / 2
-        self.attack = 5 + donjon.level / 2
+        self.attack = round(5 + donjon.level / 2)
         self.defense = 0 + donjon.level / 2
         self.agilite = 0 + donjon.level / 2
         self.deathgold = round(10+(donjon.level/2),1)
@@ -26,7 +26,7 @@ class ClassSkeleton:
     def __init__(self, donjon):
         self.name = "skeleton"
         self.vie = 10 + donjon.level / 8
-        self.attack = 5 + donjon.level / 8
+        self.attack = round(5 + donjon.level / 8)
         self.defense = 0 + donjon.level / 8
         self.agilite = 2 + donjon.level / 8
         self.deathgold = round(10+(donjon.level/2),1)
@@ -35,7 +35,7 @@ class ClassOgre:
     def __init__(self, donjon):
         self.name = "ogre"
         self.vie = 200 + donjon.level / 5
-        self.attack = 50 + donjon.level / 5
+        self.attack = round(50 + donjon.level / 5)
         self.defense = 100 + donjon.level / 5
         self.agilite = 0 + donjon.level / 5
         self.deathgold = round(10 + donjon.level / 5,1)
@@ -43,10 +43,10 @@ class ClassOgre:
 class ClassShapeshifter:
     def __init__(self, personnage, donjon):
         self.name = "shapeshifter"
-        self.vie = personnage.vie
-        self.attack = personnage.attack
-        self.defense = personnage.defense
-        self.agilite = personnage.agilite
+        self.vie = personnage.vie*0.9
+        self.attack = personnage.attack*0.9
+        self.defense = personnage.defense*0.9
+        self.agilite = personnage.agilite*0.9
         self.deathgold = round(10 + donjon.level / 2,1)
 
 class ClassIbrahim:
@@ -56,7 +56,7 @@ class ClassIbrahim:
         self.attack = 0
         self.defense = 0
         self.agilite = 100
-        self.deathgold = 0.01
+        self.deathgold = 1
 
 class ClassDuez:
     def __init__(self, donjon):

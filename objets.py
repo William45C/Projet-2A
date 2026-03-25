@@ -13,7 +13,7 @@ class ClassObjets:
     all_boss_rates = []
     all_nom = []
 
-    def __init__(self,Id,shop_rate,shop_price,chest_rate,boss_rate,nom):
+    def __init__(self,Id=None,shop_rate=None,shop_price=None,chest_rate=0,boss_rate=None,nom=None):
         self.Id = Id
         self.shop_rate = shop_rate
         self.shop_price = shop_price
@@ -28,23 +28,32 @@ class ClassObjets:
         ClassObjets.all_boss_rates.append(boss_rate)
         ClassObjets.all_nom.append(nom)
 
-    def pot_HP(self,personnage):
+    def GetEffect(self, potion, perso, donjon):
+        effect = {
+            "Potion de soin": lambda: self.pot_HP(perso),
+            "Potion dorée": lambda: self.pot_guarenteed_up_stat(perso),
+            "Potion douteuse": lambda: self.pot_random_stat1(perso),
+            "Potion très douteuse": lambda: self.pot_random_stat2(perso),
+            "Potion d'accélération temporel": lambda: self.skip_level(donjon)
+        }
+        return effect[potion]()
 
+    def pot_HP(self,personnage):
         heal_value = personnage.viemax//5
+        print(f"soin de {heal_value}")
         if personnage.vie == personnage.viemax :
             print("Vos HP sont déjà au maximum !")
         if personnage.viemax-personnage.vie < heal_value :
             diff_HP = personnage.viemax-personnage.vie
-            personnage.vie == personnage.viemax
+            personnage.vie = personnage.viemax
             ###Potion HP -1 inventaire###
-            print(f"""Vos HP ont augmenté de """,diff_HP,""".
-            Vos HP sont à:""", personnage.vie)
+            print(f"Vos HP ont augmenté de ",diff_HP,".\nVos HP sont à:", personnage.vie)
         else :
             personnage.vie += heal_value
             ###Potion HP -1 inventaire###
-            print(f"""Vos HP ont augmenté de """,heal_value,""".
-            Vos HP sont à:""", personnage.vie)
-            
+            print(f"Vos HP ont augmenté de ",heal_value,".\nVos HP sont à:", personnage.vie)
+
+    
     def pot_guarenteed_up_stat(self, personnage):
 
         rand1 = randint(0,4) ### Permet de choisir aléatoirement l'augmentation d'une stat entre +1(80%) et +2(20%)
@@ -95,25 +104,23 @@ class ClassObjets:
             personnage.agilite += augm
     
     def skip_level(self, donjon):
-
         donjon.level += 1
+        pass
 
 def chest_loot():
-        Random_Prob = [] ###Créer une liste de probabilité
-        for i in range(4):
-            ClassObjets.all_Id.append(armes.ClassArmes.all_Id[i])
-            ClassObjets.all_chest_rates.append(armes.ClassArmes.all_chest_rates[i])
-        Id = ClassObjets.all_Id
-        L = ClassObjets.all_chest_rates
+    ids = ClassObjets.all_Id + armes.ClassArmes.all_Id
+    rates = ClassObjets.all_chest_rates + armes.ClassArmes.all_chest_rates
 
-        for i in range(len(L)):
-            x=L[i]
-            while x>0 :
-                Random_Prob.append(Id[i])
-                x-=1    ###Fin création liste proba
-        shop_items = sample(Random_Prob, 1)
-        item1 = Id.index(shop_items[0])
-        return item1
+    # Weighted random choice
+    print(rates)
+    total = sum(rates)
+    r = randint(1, total)
+
+    cumulative = 0
+    for i in range(len(ids)):
+        cumulative += rates[i]
+        if r <= cumulative:
+            return ids[i]
 
 def chest_object_name(x):
     for i in range(4):
@@ -122,21 +129,19 @@ def chest_object_name(x):
     answer = x
     nom1 = noms[answer]
     return nom1
-"""
-    def pot_guarenteed_chest(self, ):
 
-    def pot_guarenteed_mob(self, ):
-    
-    def pot_gold_rate_up(self, ):
-"""
 
-potion_HP = ClassObjets(0,17,15,4,None,"Potion de soin")
-potion_guarenteed_up_stat = ClassObjets(1,3,40,4,None,"Potion dorée")
-potion_random_stat1 = ClassObjets(2,6,10,4,None,"Potion douteuse")
-potion_random_stat2 = ClassObjets(3,6,20,4,None,"Potion très douteuse")
-potion_skip_level = ClassObjets(4,3,35,4,None,"Potion d'accélération temporel")
-potion_guarenteed_chest = ClassObjets(5,3,30,4,None,"Potion du coffre")
-potion_guarenteed_mob = ClassObjets(6,7,20,4,None,"Potion hostile")
-potion_gold_rate_up = ClassObjets(7,5,25,4,None,"Potion de fortune")
-gold = ClassObjets(8,None,None,4,None,"Or x10")
-mimic = ClassObjets(9,None,None,4,0,"Oh mince MIMIC DANS TA MERE")
+#nom_obj = ClassObjets(Id, shop_rate, shop_price, chest_rate, boss_rate, "nom")
+potion_HP = ClassObjets(0,17,15,8,None,"Potion de soin")
+potion_guarenteed_up_stat = ClassObjets(1,3,40,8,None,"Potion dorée")
+potion_random_stat1 = ClassObjets(2,6,10,8,None,"Potion douteuse")
+potion_random_stat2 = ClassObjets(3,6,20,8,None,"Potion très douteuse")
+potion_skip_level = ClassObjets(4,3,35,8,None,"Potion d'accélération temporel")
+potion_guarenteed_chest = ClassObjets(5,3,30,8,None,"Potion du coffre")
+potion_guarenteed_mob = ClassObjets(6,7,20,8,None,"Potion hostile")
+potion_gold_rate_up = ClassObjets(7,5,25,8,None,"Potion de fortune")
+gold = ClassObjets(8,None,None,8,None,"Or x10")
+mimic = ClassObjets(9,None,None,8,0,"Oh mince MIMIC DANS TA MERE")
+
+
+
