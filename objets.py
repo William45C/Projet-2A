@@ -28,13 +28,15 @@ class ClassObjets:
         ClassObjets.all_boss_rates.append(boss_rate)
         ClassObjets.all_nom.append(nom)
 
-    def GetEffect(self, potion, perso, donjon):
+    def GetEffect(self, potion, perso, donjon, current_state):
         effect = {
             "Potion de soin": lambda: self.pot_HP(perso),
             "Potion dorée": lambda: self.pot_guarenteed_up_stat(perso),
             "Potion douteuse": lambda: self.pot_random_stat1(perso),
             "Potion très douteuse": lambda: self.pot_random_stat2(perso),
-            "Potion d'accélération temporel": lambda: self.skip_level(donjon)
+            "Potion d'accélération temporel": lambda: self.skip_level(donjon),
+            "Potion du coffre": lambda: self.guarenteed_chest(current_state, donjon),
+            "Potion hostile": lambda: self.guarenteed_mob(current_state, donjon),
         }
         return effect[potion]()
 
@@ -80,12 +82,21 @@ class ClassObjets:
 
         rand2 = randint(0,2) ### Permet de choisir aléatoirement la stat qui subit une augmentation/diminution
         if rand2 == 0:
-            personnage.attack += augm
+            if personnage.attack - augm < 1:
+                personnage.attack = 1
+            else:
+                personnage.attack += augm
         if rand2 == 1:
-            personnage.defense += augm
+            if personnage.defense - augm < 1:
+                personnage.defense = 1
+            else:    
+                personnage.defense += augm
         else:
-            personnage.agilite += augm
-        
+            if personnage.agilite - augm < 1:
+                personnage.agilite = 1
+            else:
+                personnage.agilite += augm
+
     def pot_random_stat2(self, personnage):
 
         rand1 = randint(0,4) ### Permet de choisir aléatoirement l'augmentation/diminution d'une stat entre +2(25%) et -2(75%)
@@ -97,22 +108,41 @@ class ClassObjets:
 
         rand2 = randint(0,2) ### Permet de choisir aléatoirement la stat qui subit une augmentation/diminution
         if rand2 == 0:
-            personnage.attack += augm
+            if personnage.attack - augm < 1:
+                personnage.attack = 1
+            else:
+                personnage.attack += augm
         if rand2 == 1:
-            personnage.defense += augm
+            if personnage.defense - augm < 1:
+                personnage.defense = 1
+            else:
+                personnage.defense += augm
         else:
-            personnage.agilite += augm
+            if personnage.agilite - augm < 1:
+                personnage.agilite = 1
+            else:
+                personnage.agilite += augm
     
     def skip_level(self, donjon):
         donjon.level += 1
         pass
 
+    def guarenteed_chest(self, current_state, donjon):
+        print("Vous avez utilisé une potion du coffre !\nLe coffre de la prochaine salle est garanti !")
+        donjon.level += 1
+        return "CHEST"
+
+    def guarenteed_mob(self, current_state, donjon):
+        print("Vous avez utilisé une potion hostile !\nLe prochain mob que vous rencontrerez est garanti !")
+        donjon.level += 1
+        return "COMBAT"
+
 def chest_loot():
-    ids = ClassObjets.all_Id + armes.ClassArmes.all_Id
-    rates = ClassObjets.all_chest_rates + armes.ClassArmes.all_chest_rates
+    ids = (ClassObjets.all_Id + armes.ClassArmes.all_Id)[:14]
+    rates = (ClassObjets.all_chest_rates + armes.ClassArmes.all_chest_rates)[:14]
 
     # Weighted random choice
-    print(rates)
+    print(ids)
     total = sum(rates)
     r = randint(1, total)
 
@@ -123,9 +153,7 @@ def chest_loot():
             return ids[i]
 
 def chest_object_name(x):
-    for i in range(4):
-        ClassObjets.all_nom.append(armes.ClassArmes.all_nom[i])
-    noms = ClassObjets.all_nom
+    noms = (ClassObjets.all_nom + armes.ClassArmes.all_nom)[:14]
     answer = x
     nom1 = noms[answer]
     return nom1

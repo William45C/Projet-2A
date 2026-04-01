@@ -40,7 +40,7 @@ def render_game(player, evenement, cmd_text, donjon, current_state, TERMINAL_GRE
     # 3. DRAW UI BOXES
     # Stats Box
     pg.draw.rect(display_buffer, TERMINAL_GREEN, (500, 100, 250, 300), 2)
-    stats = [f"NAME: {player.name}", f"HP: {player.vie}/{player.viemax}", f"ATTAQUE {player.attack}", f"DEFENSE {player.defense}", f"AGILITE {player.agilite}", f"OR: {player.Or}", f"LEVEL: {donjon.level}"]
+    stats = [f"NAME: {player.name}", f"HP: {player.vie}/{player.viemax}", f"ATTAQUE {player.attack}", f"DEFENSE {player.defense}", f"AGILITE {player.agilite}", f"OR: {player.Or}", f"LEVEL: {donjon.level}", f"ARME: {player.arme}"]
     for i, text in enumerate(stats):
         stat_img = font.render(text, True, TERMINAL_GREEN)
         display_buffer.blit(stat_img, (520, 120 + (i * 25)))

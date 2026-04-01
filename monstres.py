@@ -2,7 +2,11 @@ from random import *
 from donjon import *
 
 def randomMonster(personnage, donjon):
-    return choice([ClassGoblin(donjon), ClassOgre(donjon), ClassShapeshifter(personnage, donjon), ClassSkeleton(donjon), ClassIbrahim(), ClassDuez(donjon)])
+    return choice([ClassGoblin(donjon), ClassOgre(donjon), ClassSkeleton(donjon), ClassIbrahim()])
+
+def randomBoss(personnage, donjon):
+    return choice([ClassDuez(donjon), ClassShapeshifter(personnage, donjon)])
+
 
 class ClassGoblin:
     def __init__(self, donjon):

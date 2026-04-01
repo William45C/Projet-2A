@@ -12,6 +12,7 @@ from monstres import *
 from GUI import *
 from shop import *
 from armes import *
+import VoiceControl as vc
 
 endGame = False
 
@@ -44,16 +45,20 @@ while True:
     # --- CONSTANTS & GLOBALS ---
     STATE_EXPLORE = "EXPLORE"
     STATE_COMBAT = "COMBAT"
+    STATE_COMBATBOSS = "COMBATBOSS"
     STATE_EVENT = "EVENT"
     STATE_CHEST = "CHEST"
     STATE_SHOP = "SHOP"
     STATE_OBJECTS = "OBJECTS"
     STATE_RUN = "RUN"
     STATE_ATTACK = "ATTACK"
-    STATE_UPGRADE = "UPGRADE" #l 181
+    STATE_ATTACKBOSS = "ATTACKBOSS"
+    STATE_UPGRADE = "UPGRADE" #l181
     STATE_ESQUIVE = "ESQUIVE"
+    STATE_ESQUIVEBOSS = "ESQUIVEBOSS"
     STATE_TANK = "TANK"
     STATE_ENNEMYATTACK = "ENNEMYATTACK"
+    STATE_BOSSATTACK = "BOSSATTACK"
 
     current_state = STATE_EXPLORE
     gameEvent = "STARTING ADVENTURE"
@@ -69,15 +74,19 @@ while True:
     available3 = False
 
     def get_combat_text(index):
-        options = [" [_] ATTACK", " [_] RUN", " [_] USE ITEM"]
+        options = [" [_] ATTAQUE", " [_] FUITE", " [_] OBJET"]
+        return " / ".join([opt.replace("_", ">") if i == index else opt for i, opt in enumerate(options)])
+
+    def get_combatboss_text(index):
+        options = [" [_] ATTAQUE", " [_] DUCK", " [_] OBJET"]
         return " / ".join([opt.replace("_", ">") if i == index else opt for i, opt in enumerate(options)])
 
     def get_chest_text(index):
-        options = [" [_] OPEN IT", " [_] LEAVE IT"]
+        options = [" [_] OUVRIR", " [_] LAISSER"]
         return " / ".join([opt.replace("_", ">") if i == index else opt for i, opt in enumerate(options)])
     
     def get_shop_text(index):
-        options = [f"[_] {potionNames[0]} : {potionPrices[0]}", f"\n[_] {potionNames[1]} : {potionPrices[1]}", f"\n[_] {potionNames[2]} : {potionPrices[2]}", "\n[_] LEAVE"]
+        options = [f"[_] {potionNames[0]} : {potionPrices[0]}", f"\n[_] {potionNames[1]} : {potionPrices[1]}", f"\n[_] {potionNames[2]} : {potionPrices[2]}", "\n[_] PARTIR"]
         return "".join([opt.replace("_", ">") if i == index else opt for i, opt in enumerate(options)])
     
     def get_inventory_text(index, perso):
@@ -97,16 +106,22 @@ while True:
 
     """ LOGIQUE DU JEU (Non-blocking version) """
     def trigger_next_room():
-        global current_state, gameEvent, monstre, donjon, hp_monstre, available1, available2, available3, attack_index
+        global current_state, gameEvent, monstre, donjon, hp_monstre, available1, available2, available3, attack_index, game_surface, cmd_text, hp_boss
         
         if donjon.level % 10 == 0:
-            gameEvent = "BOSS ENCOUNTER! (Press SPACE to skip)"
-            current_state = STATE_EVENT
+            gameEvent = "BOSS ENCOUNTER!"
+            boss = randomBoss(character, donjon)
+            gameEvent = f"Ave {boss.name.upper()}, Morituri te salutant"
+            game_surface = render_game(character, gameEvent, cmd_text, donjon, current_state, TERMINAL_GREEN)
+            screen.blit(game_surface, (0, 0))
+            pygame.display.flip()
+            print(f"Ave {boss.name.upper()}, Morituri te salutant")
+            sleep(5)
+            hp_boss = boss.vie
+            current_state = STATE_COMBATBOSS
         else:
             donjon.generer_nouvelle_salle()
-            if donjon.level%10 == 0:
-                current_state = STATE_COMBAT # Boss
-            elif donjon.level%5 == 0 and inShop == False:
+            if donjon.level%5 == 0 and inShop == False:
                 current_state = STATE_SHOP
                 available1 = True
                 available2 = True
@@ -117,6 +132,12 @@ while True:
                 if evenement <= 5: # Combat
                     monstre = randomMonster(character, donjon)
                     gameEvent = f"YOU ENCOUNTER A {monstre.name.upper()} !"
+                    cmd_text = f"Vous entrez en confrontation"
+                    game_surface = render_game(character, gameEvent, cmd_text, donjon, current_state, TERMINAL_GREEN)
+                    screen.blit(game_surface, (0, 0))
+                    pygame.display.flip()
+                    print(f"YOU ENCOUNTER A {monstre.name.upper()} !")
+                    sleep(5)
                     hp_monstre = monstre.vie
                     current_state = STATE_COMBAT
                 elif evenement <= 7: # Chest
@@ -187,6 +208,14 @@ while True:
             pygame.draw.line(surface, MID_GREEN, (x_f+_offsetX, _offsetY), (x_b+_offsetX, f_top+_offsetY), 1)
             pygame.draw.line(surface, MID_GREEN, (x_f+_offsetX, _HEIGHT+_offsetY), (x_b+_offsetX, f_bottom+_offsetY), 1)
 
+
+    """ INITIALISATION """
+    # sauvegarde de la voix du joueur principal
+    #reference_embedding = enroll()
+    game_surface = render_game(character, gameEvent, cmd_text, donjon, current_state, TERMINAL_GREEN)
+    screen.blit(game_surface, (0, 0))
+    pygame.display.flip()
+    
     """ MAIN LOOP """
     while not endGame:
         if character.vie <= 0:
@@ -195,6 +224,8 @@ while True:
             GameOver = True
         if current_state == STATE_COMBAT:
             cmd_text = get_combat_text(attack_index)
+        elif current_state == STATE_COMBATBOSS:
+            cmd_text = get_combatboss_text(attack_index)
         #elif current_state == STATE_OBJECTS:
         #elif current_state == STATE_OBJECTS:
         elif current_state == STATE_OBJECTS:
@@ -232,22 +263,85 @@ while True:
 
         elif current_state == STATE_ATTACK:
             if character.attack == "rapiere":
-                d100 = randint(0,100) + character.agilite - monstre.defense/2
+                d100 = randint(0,100) - character.agilite + monstre.defense/2
             else:
-                d100 = randint(0,100) + character.attack - monstre.defense/2
+                d100 = randint(0,100) - character.attack + monstre.defense/2
+            print(d100, character.attack, monstre.defense)
             if d100 <= 85:
                 engine.say("Ow")
                 engine.runAndWait()
+                cmd_text = f"Bien joué ! Le monstre est blessé"
+                game_surface = render_game(character, gameEvent, cmd_text, donjon, current_state, TERMINAL_GREEN)
+                screen.blit(game_surface, (0, 0))
+                pygame.display.flip()
                 print(f"Bien joué ! Le monstre est blessé")
+                sleep(3)
                 attaque = character.attack + character.stats_armes
                 if attaque > 0:
                     monstre.vie -= attaque
+                    cmd_text = f"dégats {attaque}, Vie {monstre.vie}"
+                    game_surface = render_game(character, gameEvent, cmd_text, donjon, current_state, TERMINAL_GREEN)
+                    screen.blit(game_surface, (0, 0))
+                    pygame.display.flip()
                     print(f"dégats {attaque}, Vie {monstre.vie}")
+                    sleep(3)
                 else:
+                    cmd_text = "Skill issue, LOSER !"
+                    game_surface = render_game(character, gameEvent, cmd_text, donjon, current_state, TERMINAL_GREEN)
+                    screen.blit(game_surface, (0, 0))
+                    pygame.display.flip()
                     print("Skill issue, LOSER !")
+                    sleep(3)
+                    
             else: 
+                cmd_text = f"You failed to attack, fucking failure. \nPathetic wench. Stupid dumb MFcker"
+                game_surface = render_game(character, gameEvent, cmd_text, donjon, current_state, TERMINAL_GREEN)
+                screen.blit(game_surface, (0, 0))
+                pygame.display.flip()
                 print(f"You failed to attack, fucking failure. Pathetic wench. Stupid dumb MFcker")
+                sleep(3)
             current_state = STATE_ENNEMYATTACK
+
+        elif current_state == STATE_ATTACKBOSS:
+            if character.attack == "rapiere":
+                d100 = randint(0,100) - character.agilite + boss.defense/2
+            else:
+                d100 = randint(0,100) - character.attack + boss.defense/2
+            print(d100, character.attack, boss.defense)
+            if d100 <= 80:
+                engine.say("Ow")
+                engine.runAndWait()
+                cmd_text = f"Le boss a subi des dégats"
+                game_surface = render_game(character, gameEvent, cmd_text, donjon, current_state, TERMINAL_GREEN)
+                screen.blit(game_surface, (0, 0))
+                pygame.display.flip()
+                print(f"Bien joué ! Le boss est blessé")
+                sleep(3)
+                attaque = character.attack + character.stats_armes
+                if attaque > 0:
+                    boss.vie -= attaque
+                    cmd_text = f"dégats {attaque}, Vie {boss.vie}"
+                    game_surface = render_game(character, gameEvent, cmd_text, donjon, current_state, TERMINAL_GREEN)
+                    screen.blit(game_surface, (0, 0))
+                    pygame.display.flip()
+                    print(f"dégats {attaque}, Vie {boss.vie}")
+                    sleep(3)
+                else:
+                    cmd_text = "Skill issue, LOSER !"
+                    game_surface = render_game(character, gameEvent, cmd_text, donjon, current_state, TERMINAL_GREEN)
+                    screen.blit(game_surface, (0, 0))
+                    pygame.display.flip()
+                    print("Skill issue, LOSER !")
+                    sleep(3)
+                    
+            else: 
+                cmd_text = f"You failed to attack, fucking failure. \nPathetic wench. Stupid dumb MFcker"
+                game_surface = render_game(character, gameEvent, cmd_text, donjon, current_state, TERMINAL_GREEN)
+                screen.blit(game_surface, (0, 0))
+                pygame.display.flip()
+                print(f"You failed to attack, fucking failure. Pathetic wench. Stupid dumb MFcker")
+                sleep(3)
+            current_state = STATE_BOSSATTACK
                     
         elif current_state == STATE_ENNEMYATTACK:
             if monstre.vie >= 0:
@@ -259,11 +353,23 @@ while True:
                         character.vie -= round(attaque,2)
                         if character.vie < 0:
                             character.vie = 0
+                        cmd_text = f"dégats {round(attaque,2)}"
+                        game_surface = render_game(character, gameEvent, cmd_text, donjon, current_state, TERMINAL_GREEN)
+                        screen.blit(game_surface, (0, 0))
+                        pygame.display.flip()
                         print(f"dégats {round(attaque,2)}")
+                        sleep(1)
+                        
                 else:
                     engine.say("Je... Je... Je me meurs")
                     engine.runAndWait()
+                    cmd_text = "Vous évitez l'attaque du monstre magnifiquement !"
+                    game_surface = render_game(character, gameEvent, cmd_text, donjon, current_state, TERMINAL_GREEN)
+                    screen.blit(game_surface, (0, 0))
+                    pygame.display.flip()
                     print("Vous évitez l'attaque du monstre magnifiquement !")
+                    sleep(1)
+                    
                 current_state = STATE_COMBAT
             else:
                 inCombat = False
@@ -299,11 +405,21 @@ while True:
         elif current_state == STATE_RUN:
             d100 = randint(0,100)
             if d100<=(80 + character.agilite/10 - monstre.agilite/10):
+                cmd_text = f"You run"
+                game_surface = render_game(character, gameEvent, cmd_text, donjon, current_state, TERMINAL_GREEN)
+                screen.blit(game_surface, (0, 0))
+                pygame.display.flip()
                 print(f"You run")
+                sleep(3)
                 current_state = STATE_EXPLORE
                 inCombat = False
             else:
+                cmd_text = f"You failed to run, you fcking coward"
+                game_surface = render_game(character, gameEvent, cmd_text, donjon, current_state, TERMINAL_GREEN)
+                screen.blit(game_surface, (0, 0))
+                pygame.display.flip()
                 print(f"You failed to run, you fcking coward")
+                sleep(3)
                 current_state = STATE_ENNEMYATTACK
                 attack_index = 0
 
@@ -311,7 +427,6 @@ while True:
             #donjon.generer_nouvelle_salle()
 
                         
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -319,21 +434,56 @@ while True:
             if event.type == pygame.KEYDOWN and GameOver:
                 if event.key == pygame.K_SPACE:
                     endGame=True
-            if event.type == pygame.KEYDOWN and not antiHold and not GameOver or inCombat and not antiHold and not GameOver:
+
+            if not GameOver or inCombat and not GameOver:
+
+                if current_state == STATE_EVENT:
+                    #if event.key == pygame.K_SPACE:
+                        #donjon.level += 1
+                        current_state = STATE_EXPLORE
+                        donjon.generer_nouvelle_salle()
+                        gameEvent = "EXPLORATION..."
+            if event.type == pygame.KEYUP:
+                antiHold = False 
+
+        if not antiHold and not GameOver or inCombat and not antiHold and not GameOver:
                 antiHold = True
                 # --- COMBAT LOGIC ---
-                if current_state == STATE_COMBAT or current_state == STATE_CHEST or current_state == STATE_SHOP or current_state == STATE_OBJECTS:
+                if current_state == STATE_COMBAT or current_state == STATE_CHEST or current_state == STATE_SHOP or current_state == STATE_OBJECTS or current_state == STATE_EXPLORE:
+                    commandeVocale = vc.actionVocale(current_state, len(character.retrieveObjects()) +1)
                     if (current_state == STATE_CHEST): max_index = 2
                     elif (current_state == STATE_SHOP): max_index = 4
                     elif (current_state == STATE_OBJECTS): max_index = len(character.retrieveObjects()) +1
                     else: max_index = 4
+                    """
                     if event.key == pygame.K_LEFT:
                         attack_index = (attack_index - 1) % max_index
                     elif event.key == pygame.K_RIGHT:
-                        attack_index = (attack_index + 1) % max_index
-                    elif event.key == pygame.K_SPACE:
+                        attack_index = (attack_index + 1) % max_index"""
+                    if type(commandeVocale)==int:
+                        attack_index = commandeVocale
                         print(f"Executed action: {attack_index}")
-                        if current_state == STATE_SHOP and inShop:
+                        if current_state == STATE_EXPLORE:
+                            direction = None
+                            if attack_index == 0:
+                                direction = 'z'
+                            if attack_index == 1:
+                                direction = 'd'
+                            if attack_index == 2:
+                                direction = 'g'
+                            if attack_index == 3:
+                                direction = 'o'
+
+                            if direction:
+                                if donjon.tenter_deplacement(direction, True, character) is None:
+                                    current_state = STATE_OBJECTS
+                                    attack_index = 0
+                                elif donjon.tenter_deplacement(direction, True, character):
+                                    donjon.level += 1
+                                    trigger_next_room()
+                                else:
+                                    gameEvent = "C'est un mur ! Choisissez un autre chemin."
+                        elif current_state == STATE_SHOP and inShop:
                             if attack_index == 0 and available1:
                                 if achat(shopItems[0], character):
                                     available1 = False
@@ -352,19 +502,26 @@ while True:
                                 inShop = False 
                             else:
                                 print("Object n'est plus disponible")
-                        if current_state == STATE_OBJECTS:
+                        elif current_state == STATE_OBJECTS:
                             if attack_index == len(character.retrieveObjects()):
                                 if inCombat:
                                     current_state = STATE_COMBAT
                                 else:
                                     current_state = STATE_EXPLORE
                             else:
+                                cmd_text = f"Using {character.retrieveObjects()[attack_index]}"
+                                game_surface = render_game(character, gameEvent, cmd_text, donjon, current_state, TERMINAL_GREEN)
+                                screen.blit(game_surface, (0, 0))
+                                pygame.display.flip()
                                 print(f"Using {character.retrieveObjects()[attack_index]}")
+                                sleep(3)
                                 NomPotion = str(str(character.retrieveObjects()[attack_index]).split(' : ')[0])
                                 obj = ClassObjets()
-                                obj.GetEffect(NomPotion, character, donjon)
+                                effet = obj.GetEffect(NomPotion, character, donjon, current_state)
+                                if effet != None:
+                                    current_state = effet
                                 character.objets[NomPotion] -= 1
-                        if current_state == STATE_CHEST:
+                        elif current_state == STATE_CHEST:
                             if attack_index == 0:
                                 loot = chest_loot()
                                 gameEvent = f"YOU FOUND {chest_object_name(loot)}"
@@ -374,7 +531,7 @@ while True:
                                 elif loot == 9:
                                      current_state = STATE_COMBAT
                                 elif 10<loot<15:
-                                    armes.choix_darme
+                                    armes.ClassArmes.choix_darme
                                 else:
                                     character.objets[names_select(loot)] += 1
                                     print(character.objets)
@@ -382,7 +539,7 @@ while True:
                                 current_state = STATE_EVENT
                             elif attack_index == 1:
                                 current_state = STATE_EVENT
-                        if current_state == STATE_COMBAT:
+                        elif current_state == STATE_COMBAT:
                             inCombat = True
                             if attack_index == 0:
                                 current_state = STATE_ATTACK
@@ -390,7 +547,7 @@ while True:
                                 print("run")
                                 current_state = STATE_RUN
                             elif attack_index == 2:
-                                print("object")        
+                                print("object")     
                                 current_state = STATE_OBJECTS
                                 attack_index = 0
                             elif attack_index == 3:
@@ -399,33 +556,6 @@ while True:
                             elif attack_index == 4:
                                 print("tank")        
                                 current_state = STATE_TANK
-                
-                # --- EXPLORATION LOGIC (Z, Q, D) ---
-                if current_state == STATE_EXPLORE:
-                    direction = None
-                    if event.key == pygame.K_z: direction = 'z'
-                    elif event.key == pygame.K_q: direction = 'q'
-                    elif event.key == pygame.K_d: direction = 'd'
-                    elif event.key == pygame.K_o: direction = 'o'
-
-                    if direction:
-                        if donjon.tenter_deplacement(direction, True, character) is None:
-                            current_state = STATE_OBJECTS
-                            attack_index = 0
-                        elif donjon.tenter_deplacement(direction, True, character):
-                            donjon.level += 1
-                            trigger_next_room()
-                        else:
-                            gameEvent = "C'est un mur ! Choisissez un autre chemin."
-
-                if current_state == STATE_EVENT:
-                    if event.key == pygame.K_SPACE:
-                        #donjon.level += 1
-                        current_state = STATE_EXPLORE
-                        donjon.generer_nouvelle_salle()
-                        gameEvent = "EXPLORATION..."
-            if event.type == pygame.KEYUP:
-                antiHold = False 
 
         
         # rendering

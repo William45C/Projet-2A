@@ -71,7 +71,7 @@ class Actions:
             jet = randint(0,100) + personnage.agilite
 
             if jet <= (80 + personnage.agilite/10 - monstre.agilite/10):
-            current_state = "RUN"
+                current_state = "RUN"
             #test d'agilité
             #si réussi, stage suivant (mais pas de récompense)
         else : 
@@ -107,13 +107,13 @@ class Actions:
 100 : goldKnuckles
 """
 
-    def piege():
+def piege():
         if Actions.action == "esquive":
             pass
         elif Actions.action == "tank":
             pass
 
-    def vide():
+def vide():
         if Actions.action == "attendre":
             pass
         elif Actions.action == "invocation":

@@ -4,7 +4,7 @@ from random import *
 
 def shop_item_selection():
     Random_Prob = [] ###Créer une liste de probabilité
-    Id = ClassObjets.all_Id
+    Id = ClassObjets.all_Id[:7]
     L = ClassObjets.all_shop_rates[:7]
     
     for i in range(len(L)):
@@ -33,7 +33,7 @@ def prix_select(x):
     return prix1
 
 def names(x):
-    noms = ClassObjets.all_nom
+    noms = ClassObjets.all_nom[:7]
     answer = x
     nom1 = noms[int(answer[0])]
     nom2 = noms[int(answer[1])]
@@ -41,7 +41,7 @@ def names(x):
     return [nom1,nom2,nom3]
 
 def names_select(x):
-    noms = ClassObjets.all_nom
+    noms = (ClassObjets.all_nom+armes.ClassArmes.all_nom)[:15]
     answer = x
     nom1 = noms[int(answer)]
     return nom1

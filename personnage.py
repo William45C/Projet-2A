@@ -6,20 +6,20 @@ class ClassPersonnage:
     def __init__(self,donjon):
         self.name = ""
         self.viemax = 200
-        self.vie = 180
+        self.vie = 200
         self.attack = 60
         self.defense = 30
         self.agilite = 30
         self.Or = 1000
         self.objets = {
-            "Potion de soin": 0,
-            "Potion dorée": 0,
-            "Potion douteuse": 0,
-            "Potion très douteuse": 0,
-            "Potion d'accélération temporel": 0,
-            "Potion du coffre": 0,
-            "Potion hostile": 0,
-            "Potion de fortune": 0
+            "Potion de soin": 2,
+            "Potion dorée": 2,
+            "Potion douteuse": 2,
+            "Potion très douteuse": 2,
+            "Potion d'accélération temporel": 200,
+            "Potion du coffre": 2,
+            "Potion hostile": 2,
+            "Potion de fortune": 2
         }
         self.arme = "epee"
         self.stats_armes = self.statsArmes(donjon)[self.arme].mod
@@ -37,10 +37,10 @@ class ClassPersonnage:
         """ ARMES """ 
         return {      # "nom arme" : (dégats)
             #"nom arme", 
-            "epee" : ClassArmes(0,0,0,6,25,"Epee",self.attack,donjon),
-            "rapier" : ClassArmes(0,0,0,6,10,"Rapiere", self.agilite,donjon),
-            "shield" : ClassArmes(0,0,0,7,14,"Shield", self.defense,donjon),
-            "goldKnuckles" : ClassArmes(0,0,0,1,1,"Poing duriche", self.Or,donjon)
+            "epee" : ClassArmes(10,0,0,6,25,"Epee",self.attack,donjon),
+            "rapier" : ClassArmes(11,0,0,6,10,"Rapiere", self.agilite,donjon),
+            "shield" : ClassArmes(12,0,0,7,14,"Shield", self.defense,donjon),
+            "goldKnuckles" : ClassArmes(13,0,0,1,1,"Poing duriche", self.Or,donjon)
         }
 
     def displayStats(self):

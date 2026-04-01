@@ -1,4 +1,3 @@
-from personnage import *
 from random import *
 from donjon import *
 
@@ -32,9 +31,9 @@ class ClassArmes:
         else:
             print(f"Veuillez entrer 'oui' ou 'non'")
 
-ClassArmes(0,0,0,6,25,"Epee"),
-ClassArmes(0,0,0,6,10,"Rapiere"),
-ClassArmes(0,0,0,7,14,"Shield"),
-ClassArmes(0,0,0,1,1,"Poing duriche")
+ClassArmes(10,0,0,6,25,"Epee"),
+ClassArmes(11,0,0,6,10,"Rapiere"),
+ClassArmes(12,0,0,7,14,"Shield"),
+ClassArmes(13,0,0,1,1,"Poing duriche")
 #nom = ClassArmes(id,shop_rate,shop_price,chest_rate,boss_rate,nom)
 
