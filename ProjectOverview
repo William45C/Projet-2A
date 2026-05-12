@@ -1,0 +1,87 @@
+RPG à base de commande vocale     
+
+Objectifs : 
+- création du personnage avec les compétence (répartition de 10 points de compétence selon : agilité, attack, défense) [FAIT]
+-Système d'inventaire + Objets [En cours]
+- création d'ennemis [Fait]
+- création du donjon [Fait]
+- améliorer l'interactivité du jeu à la voix du joueur [À faire]
+
+
+Fonctions nécessaires : 
+- reconnaissance vocale [À faire]
+- fonction aléatoire pour déterminer les rencontres et les résultats des actions [En cours]
+- influence des résultats des jets par les stats [À faire]
+- les npc doivent avoir des voix [À faire]
+- système d'HP [En cours]
+-système de potions inclus dans le shop [Fait]
+
+Gameplay :
+-10 stages -> Boss
+-5 stages -> Shop
+-Random chest, mob or nothing for every stages (exept 5 and 10)
+  -> Increased probability for chest or mob if rolled nothing
+-salle aléatoires (escalier bas, escalier haut, devant, droite, gauche, puit, échelle)
+
+Splitted script :
+-Main Game (Interface)
+ ___________________
+    | Inventaire    |
+  ->| Déplacements  |
+    | Ex            |
+    | Ex            |
+ ___|_______________|
+-Déplacements (donjon)
+-Shop
+-Inventaire
+-Reconnaissance vocale
+-Ennemis (stats + CA + ce qu'on peut avoir si on les bat)
+-Personnage principal
+-Weapons
+-Potions
+
+Stats : 
+-Attaque
+-Défence
+-Agilité
+-Constitution
+-Chance
+(optionel : armure)
+
+Objets:
+-HP
+-Up Base Stat (Agi, Attack, Défense) (rare)
+-Mob guaranteed next stage
+-Chest guarenteed next stage
+-Random potion (Up or down Base Stat)
+-Gold Increase
+-Skip level
+-Useless branche
+
+Weapons :
+-Lance
+-Epée
+-Arc
+-Bouclier
+-Hache
+
+
+
+Déroulement par sessions : 
+Session 1 : 
+Définition du projet, détermination des fonctions nécessaires, mise en place du système de base, définition simple du système de jeu
+
+Session 2 : 
+finition de la définition du système de jeu, détermination exacte des besoins, codage des fonctions, début de l'amélioration de l'interactivité vocale
+
+Session 3 : 
+codage du jeu, explication des détails du code sur le code, optimisation du code, augmentation de l'interactivité du jeu
+
+Session 4 : 
+finition du codage du jeu et début des tests, amélioration de l'interactivité du jeu, début de la rédaction de la fiche technique
+
+Session 5 : 
+tests et débuggage, fin de la rédaction de la fiche technique et relecture de la fiche technique, améliorations finales sur le système vocal
+
+
+
