@@ -10,7 +10,7 @@ class ClassPersonnage:
         self.attack = 5
         self.defense = 5
         self.agilite = 5
-        self.Or = round(1000,1)
+        self.Or = round(50,1)
         self.objets = {
             "Potion de soin": 0,
             "Potion dorée": 0,
