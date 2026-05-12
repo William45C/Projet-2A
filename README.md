@@ -3,12 +3,10 @@
 
 Inaki Derouet, Guillaume Dorange, Nathan Boettcher
 
-####################|
-Press Space to start|
-####################|
-
 Commandes :
 
+    Press Space to start
+    
     Choix des statistiques :
         -"Attaque" Séléctionne la stat attaque
         -"Défense" Séléctionne la stat défense
