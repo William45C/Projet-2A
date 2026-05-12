@@ -2,6 +2,9 @@
 #https://github.com/William45C/Projet-2A.git
 
 Inaki Derouet, Guillaume Dorange, Nathan Boettcher
+####################|
+Press Space to start|
+####################|
 
 Commandes :
 
